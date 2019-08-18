@@ -13,7 +13,7 @@ public class MoveCameraWindow : EditorWindow
 
 
     float X_Move = 2;
-    float Y_Move = 2;
+    //    float Y_Move = 2;
     float Z_Move = 2;
 
     float Turn_Amt;
@@ -34,7 +34,7 @@ public class MoveCameraWindow : EditorWindow
         GUILayout.Label("Move Camera", EditorStyles.boldLabel);
         camera = (GameObject)EditorGUILayout.ObjectField("Camera:", camera, typeof(Object), true);
 
-        if (camera!=null && initPos== new Vector3(0, 0, 0))
+        if (camera != null && initPos == new Vector3(0, 0, 0))
         {
             Debug.Log("initial transform is " + initPos + ", " + initRot);
             initPos = camera.transform.position;
@@ -130,6 +130,6 @@ public class MoveCameraWindow : EditorWindow
         camera.transform.position = initPos;
         camera.transform.eulerAngles = initRot;
 
-        initPos = new Vector3(0,0,0);
+        initPos = new Vector3(0, 0, 0);
     }
 }

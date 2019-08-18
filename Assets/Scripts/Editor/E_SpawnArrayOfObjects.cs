@@ -14,8 +14,6 @@ public class SpawnArrayWindow : EditorWindow
     string ContainerName = "Container";
     string ObjectName = "";
 
-    float z = 0;
-
     int X_Number = 0;
     int Y_Number = 0;
     int Z_Number = 0;
@@ -33,8 +31,8 @@ public class SpawnArrayWindow : EditorWindow
     float Z_Offset = 0;
 
     int GameObjectLimit = 10001;
-    int PositionalLimit = 1000001;
-    int MaxGameObjects = 5000;
+    ulong PositionalLimit = 10000001;
+    int MaxGameObjects = 15626;
 
     /*
     * Axes to use is an int representing which axes to create the grid on
@@ -45,7 +43,7 @@ public class SpawnArrayWindow : EditorWindow
     */
     private int index;
 
-    [MenuItem("Tools/E_SpawnArrayOfObjects")]
+    [MenuItem("Tools/SpawnArrayOfObjects")]
     public static void ShowWindow()
     {
         //Creates the window
@@ -283,6 +281,8 @@ public class SpawnArrayWindow : EditorWindow
         }
         catch (Exception e)
         {
+            if (e.GetType() == typeof(NullReferenceException))
+            { }
             MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
             foreach (MeshRenderer mr in renderers)
             {
