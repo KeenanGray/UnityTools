@@ -76,19 +76,36 @@ public class ObjectPool_Root : MonoBehaviour
             //offset = i; //No offset, order is z axis
 
             //Flip to X - Axis
-            if (i < (SizeVector.x * SizeVector.y))
+            //Order of cubes is YX
+            if (true)
+            {
                 offset = (i * (int)(SizeVector.z));
+                if (i >= SizeVector.x * SizeVector.y)
+                {
+                    //wrap around when number is too large
+                    offset = (i % (int)(SizeVector.x * SizeVector.y)) * (int)(SizeVector.z) + i / (int)(SizeVector.x * SizeVector.y);
+                }
+            }
 
             //Todo: I need to think about this more. some numbers need to be reduced, not increased
             //How can this be achieved via wrapping?
-            //Flip to Y - Axis
-            if (i < SizeVector.x * SizeVector.z)
+            //Order of cubes is ZX
+            /*
+            if (true)
             {
-                offset = (int)(SizeVector.y * SizeVector.z) * (int)(i % SizeVector.x) + (int)(i % SizeVector.z);
-                //(int)((SizeVector.x * SizeVector.z + 1) + (i % SizeVector.x) * (SizeVector.y * SizeVector.z));
+                offset = (i % (int)(SizeVector.z)) + (int)(i / SizeVector.z) * (int)(SizeVector.z * SizeVector.y);
+                if (offset >= SizeVector.z * SizeVector.x * SizeVector.y)
+                {
+                    offset = ((i) % (int)(SizeVector.z)) + (int)((i) / SizeVector.z) * (int)(SizeVector.z * SizeVector.y);
+                    offset -= (int)(i / (SizeVector.x * SizeVector.z)) * (int)(SizeVector.z * SizeVector.x * SizeVector.y);
+                    offset += (int)(SizeVector.z) * (int)(i / (int)(SizeVector.x * SizeVector.z));
+                }
+
             }
-            //Z - Axis is default
-            //offset = i;
+            */
+            //Order of cubes is ZY
+            // if (true)
+            //     offset = i;
 
             try
             {
@@ -96,7 +113,7 @@ public class ObjectPool_Root : MonoBehaviour
             }
             catch (Exception e)
             {
-                Debug.Log("oops " + i);
+                //Debug.Log("oops i=" + " offset=" + offset);
             }
 
 

@@ -32,8 +32,8 @@ public class SpawnArrayWindow : EditorWindow
     float Y_Offset = 0;
     float Z_Offset = 0;
 
-    int GameObjectLimit = 7001;
-    int PositionalLimit = 1000000;
+    int GameObjectLimit = 10001;
+    int PositionalLimit = 1000001;
     int MaxGameObjects = 5000;
 
     /*
@@ -100,7 +100,7 @@ public class SpawnArrayWindow : EditorWindow
 
         EditorGUILayout.EndHorizontal();
         if (MaxGameObjects >= GameObjectLimit)
-            EditorGUILayout.HelpBox(MaxGameObjects + " gameobjects is likely too many to spawn and will crash Unity", MessageType.Error);
+            EditorGUILayout.HelpBox(MaxGameObjects + " gameobjects is likely too many to spawn and will crash Unity[MAXNUMBER=" + GameObjectLimit + "]", MessageType.Error);
 
         //starts a horizontal layout group
         EditorGUILayout.BeginHorizontal();
