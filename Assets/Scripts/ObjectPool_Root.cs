@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
-using System.Linq;
 
 
 [ExecuteInEditMode]
@@ -20,7 +19,7 @@ public class ObjectPool_Root : MonoBehaviour
     [HideInInspector]
     GameObject cam;
     [SerializeField]
-    Orientation orient = Orientation.XY;
+    Orientation orient = Orientation.YZ;
 
     [HideInInspector]
     Orientation lastOrientation;
@@ -30,21 +29,23 @@ public class ObjectPool_Root : MonoBehaviour
     Vector3 SizeVector;
 
     [SerializeField]
+    Vector3 Spacing;
+
+    [SerializeField]
     [HideInInspector]
     Vector3[] objectPositions;
     [HideInInspector]
     GameObject[] myObjects;
 
     Vector3[] ActivePositions;
-    private int lastNumToShow;
-    Vector3[] v3Array;
+
+
     bool justStarted = false;
     // Start is called before the first frame update
     void Start()
     {
         cam = Camera.main.gameObject;
         justStarted = true;
-        holdIndexVector = new Vector3();
     }
 
     // Update is called once per frame
@@ -75,93 +76,126 @@ public class ObjectPool_Root : MonoBehaviour
             for (int i = 0; i < myObjects.Length; i++)
             {
                 myObjects[i].transform.localPosition = ActivePositions[i];
-                myObjects[i].name = IndexToVector(i).ToString();
+                myObjects[i].name = i + " " + IndexToVector(i).ToString();
             }
-        }
-
-        if (numToShow != lastNumToShow)
-        {
-            v3Array = new Vector3[(int)Mathf.Pow(numToShow, 3)];
-            lastNumToShow = numToShow;
         }
 
         var camT = GameObject.Find("CameraTracker").transform;
 
         Vector3 cameraRelative = camT.InverseTransformPoint(transform.position) * -1;
         cameraRelative += Camera.main.transform.forward;
-        //        Debug.Log(cameraRelative);
+
         //ActivateClosestToOrigin(new Vector3(0, 0, 0));
-        ActivateClosestToOrigin(cameraRelative);
+        ActivateClosestToOrigin(MakeVectorPositive(cameraRelative));
+
+        /*
+        for (int i = 0; i < objectPositions.Length - 1; i++)
+        {
+            Debug.DrawLine(objectPositions[i], objectPositions[i + 1]);
+        }
+        */
+
     }
 
-    public int numToShow = 5;
+    private Vector3 MakeVectorPositive(Vector3 inVec)
+    {
+        var newVec = new Vector3(0, 0, 0);
+        if (inVec.x > 0)
+            newVec.x = inVec.x;
+        if (inVec.y > 0)
+            newVec.y = inVec.y;
+        if (inVec.z > 0)
+            newVec.z = inVec.z;
+        return newVec;
+    }
+
     private void ActivateClosestToOrigin(Vector3 origin)
     {
-        var realNum = (numToShow - 1) / 2;
-        var len = 0;
+        origin = new Vector3(origin.x / Spacing.x, origin.y / Spacing.y, origin.z / Spacing.z);
+
+        int realNum = (int)Mathf.Pow(ActivePositions.Length, .33f);// ActivePositions.Length / 3;
+
+        origin = new Vector3(origin.x - realNum / 2, origin.y - realNum / 2, origin.z);
+
         if (ActivePositions != null)
         {
             if (ActivePositions.Length > 0)
             {
-                len = ActivePositions.Length;
+
                 //Setup the active positions array so that only the positions nearest the origin are active
-                Vector3 tmp = new Vector3();
+                int max_X = (int)((origin.x + realNum));
+                int max_Y = (int)((origin.y + realNum));
+                int max_Z = (int)((origin.z + realNum));
 
-                int max_X = (int)origin.x + realNum;// (int)SizeVector.x;
-                int max_Y = (int)origin.y + realNum;// (int)SizeVector.y;
-                int max_Z = (int)origin.z + realNum; //(int)SizeVector.z;
+                int Start_X = (int)Mathf.Max(origin.x, origin.x - realNum);
+                int Start_Y = (int)Mathf.Max(origin.y, origin.y - realNum);
+                int Start_Z = (int)Mathf.Max(origin.z, origin.z - realNum);
 
-                int min_X = (int)origin.x - realNum;// (int)SizeVector.x;
-                int min_Y = (int)origin.y - realNum;// (int)SizeVector.y;
-                int min_Z = (int)origin.z - realNum; //(int)SizeVector.z;
+                int end_X = Mathf.Min(max_X, (int)SizeVector.x);
+                int end_Y = Mathf.Min(max_Y, (int)SizeVector.y);
+                int end_Z = Mathf.Min(max_Z, (int)SizeVector.z);
 
-                var j = 0;
-
-                // if (objectPositions == null)
-                //     GenerateObjectPositions();
-
-                //TODO: Manage this without iteration
-                //We should be able to grab the indexes we need some other ways
-                for (int i = 0; i < objectPositions.Length; i++)
+                int j = 0;
+                //Upper Right quadrant
+                for (int x = (int)(origin.x); x < end_X; x++)
                 {
-                    //if (i < objectPositions.Length - 1)
-                    //    Debug.DrawLine(objectPositions[i], objectPositions[i + 1]);
-
-                    //Index to vector seems to the be the holdup
-                    //To much mathmatics
-                    tmp = IndexToVector(i);
-
-                    if ((tmp.x >= min_X && tmp.x <= max_X) &&
-                        (tmp.y >= min_Y && tmp.y <= max_Y) &&
-                        (tmp.z >= min_Z && tmp.z <= max_Z))
+                    for (int y = (int)(origin.y); y < end_Y; y++)
                     {
-
-                        if (j < len)
+                        for (int z = (int)(origin.z); z < end_Z; z++)
                         {
-                            ActivePositions[j] = objectPositions[ObjectPositionFromVector(tmp)];
-                            j++;
-                        }
-                        else
-                        {
-                            i = objectPositions.Length;
-                            break;
+                            if (j < ActivePositions.Length)
+                            {
+                                try
+                                {
+                                    ActivePositions[j] = objectPositions[IndexFromXYZ(x, y, z)];
+                                    j++;
+                                }
+                                catch (Exception e)
+                                {
+                                    if (e is IndexOutOfRangeException)
+                                    {
+                                    }
+                                }
+                            }
+                            else
+                            {
+                            }
                         }
                     }
-                    else
-                    {
-
-                    }
-
                 }
 
                 for (int i = 0; i < ActivePositions.Length; i++)
                 {
-                    //myObjects[i].transform.localPosition = new Vector3(0, 0, 0);
-                    myObjects[i].transform.localPosition = ActivePositions[i];
+                    if (i < Math.Pow(realNum, 3))
+                    {
+                        //myObjects[i].transform.localPosition = new Vector3(0, 0, 0);
+                        myObjects[i].transform.localPosition = ActivePositions[i];
+                    }
+                    else
+                    {
+                        myObjects[i].transform.localPosition = ActivePositions[0];
+                    }
                 }
-
             }
         }
+    }
+
+    private int IndexFromXYZ(int x, int y, int z)
+    {
+        var index = 0f;
+        switch (orient)
+        {
+            case Orientation.XY:
+                index = 6;// (SizeVector.y * x) + y;
+                break;
+            case Orientation.YZ:
+                index = (y * SizeVector.z) + (z) + x * ((SizeVector.y * SizeVector.z));
+                break;
+            case Orientation.XZ:
+                index = 0;
+                break;
+        }
+        return (int)index;
     }
 
     private void GenerateObjectPositions()
@@ -251,14 +285,12 @@ public class ObjectPool_Root : MonoBehaviour
             catch (Exception e)
             {
                 if (e.GetType() == typeof(NullReferenceException)) { }
-                //Debug.Log("oops i=" + " offset=" + offset);
             }
         }
     }
 
     //gives a coordinate to a gameobject in postion based on currently chosen orientation
     //And index of position in the list
-    Vector3 holdIndexVector;
     private Vector3 IndexToVector(int i)
     {
         float x = -1;
@@ -286,7 +318,6 @@ public class ObjectPool_Root : MonoBehaviour
             default:
                 break;
         }
-        //Debug.Log(x + " " + y + "" + z);
         return new Vector3((int)x, (int)y, (int)z);
     }
 
@@ -300,6 +331,11 @@ public class ObjectPool_Root : MonoBehaviour
         {
             myObjects[i] = transform.GetChild(i).gameObject;
         }
+    }
+
+    public void SetSpacing(Vector3 vector3)
+    {
+        Spacing = vector3;
     }
 }
 

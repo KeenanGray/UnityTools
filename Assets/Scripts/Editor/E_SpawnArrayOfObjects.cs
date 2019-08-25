@@ -31,7 +31,7 @@ public class SpawnArrayWindow : EditorWindow
     float Z_Offset = 0;
 
     int GameObjectLimit = 10001;
-    ulong PositionalLimit = 10000001;
+    ulong PositionalLimit = 100000001;
     int MaxGameObjects = 15626;
 
     /*
@@ -153,7 +153,6 @@ public class SpawnArrayWindow : EditorWindow
 
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndHorizontal();
-
 
             EditorGUILayout.BeginHorizontal();
             //begins a disabled group, using the boolean parameter to determine activation
@@ -343,8 +342,9 @@ public class SpawnArrayWindow : EditorWindow
             }
         }
 
-        container.GetComponent<ObjectPool_Root>().SetupObjectPool(posArray, min, new Vector3(numbers[0], numbers[1], numbers[2]));
 
+        container.GetComponent<ObjectPool_Root>().SetupObjectPool(posArray, min, new Vector3(numbers[0], numbers[1], numbers[2]));
+        container.GetComponent<ObjectPool_Root>().SetSpacing(new Vector3(X_Spacing, Y_Spacing, Z_Spacing));
     }
 
     private GameObject CreateNewInstance(GameObject p, int row, int col, int depth, Vector3 numbers)
