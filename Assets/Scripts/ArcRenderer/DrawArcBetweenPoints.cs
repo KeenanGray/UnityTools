@@ -13,12 +13,12 @@ public class DrawArcBetweenPoints : MonoBehaviour
     Vector3 Position;
 
     [SerializeField]
-    bool Restart;
+    bool Restart = false;
 
     GameObject ArcTarget;
 
     [SerializeField]
-    int NumSegments;
+    int NumSegments = 0;
 
     LineRenderer lr;
     // Start is called before the first frame update

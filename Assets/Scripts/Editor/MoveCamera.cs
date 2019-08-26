@@ -27,6 +27,7 @@ public class MoveCameraWindow : EditorWindow
         //Show existing window instance. If one doesn't exist, make one.
         EditorWindow.GetWindow(typeof(MoveCameraWindow));
 
+
     }
 
     void OnGUI()
