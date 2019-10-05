@@ -38,6 +38,7 @@ namespace GameSave
         public static void CreateSaveFile()
         {
             StreamWriter writer = new StreamWriter(SavePath, true);
+            Debug.Log("Savepath " + SavePath);
             writer.WriteLine("NameOfFile");
             writer.Close();
 

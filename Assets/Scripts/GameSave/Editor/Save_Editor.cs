@@ -64,6 +64,8 @@ namespace GameSave
             }
             catch (Exception e)
             {
+                if (e.GetType() == typeof(NullReferenceException)) { }
+
                 EditorGUILayout.HelpBox("No Save File at this location", MessageType.Error);
                 var width = 150;
                 if (GUILayout.Button("Create New Save File", GUILayout.Width(width)))
