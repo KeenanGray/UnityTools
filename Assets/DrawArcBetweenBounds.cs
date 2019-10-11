@@ -5,7 +5,7 @@ using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(LineRenderer))]
-public class DrawArcBetweenPoints : MonoBehaviour
+public class DrawArcBetweenBounds : MonoBehaviour
 {
     [SerializeField]
     [Range(1, 50)]
@@ -54,11 +54,11 @@ public class DrawArcBetweenPoints : MonoBehaviour
             {
                 float t = i / (float)NumSegments;
                 int nodeIndex = j * 3;
-                Vector3 pixel = CalculateCubicBezierPoint(t, controlPoints[nodeIndex].position, controlPoints[nodeIndex + 1].position, controlPoints[nodeIndex + 2].position, controlPoints[nodeIndex + 3].position);
+                Vector3 pixel = CalculateCubicBezierPoint(t, controlPoints[nodeIndex].gameObject.GetComponent<Renderer>().bounds.center, controlPoints[nodeIndex + 1].gameObject.GetComponent<Renderer>().bounds.center, controlPoints[nodeIndex + 2].gameObject.GetComponent<Renderer>().bounds.center, controlPoints[nodeIndex + 3].gameObject.GetComponent<Renderer>().bounds.center);
 
                 lr.positionCount = (j * NumSegments) + i + 1;
                 lr.SetPosition((j * NumSegments) + (i - 1) + 1, pixel);
-                lr.SetPosition(0, transform.GetChild(0).position);
+                lr.SetPosition(0, transform.GetChild(0).gameObject.GetComponent<Renderer>().bounds.center);
             }
 
         }
