@@ -23,8 +23,25 @@ public class PlaceCapsulesOnLR : MonoBehaviour
         if (lr == null)
             lr = GetComponent<LineRenderer>();
 
+        var capsules = CapsuleContainer.transform.childCount;
+        //delete capsules if we have extras
+        if (capsules > lr.positionCount)
+        {
+            for (int i = capsules - lr.positionCount; i > 0; i--)
+            {
+                DestroyImmediate(CapsuleContainer.transform.GetChild(0).gameObject);
+            }
+        }
+        //add capsules if we need more
+        if (lr.positionCount > capsules)
+        {
+            for (int i = lr.positionCount - capsules; i > 0; i--)
+            {
+                Instantiate(CapsuleContainer.transform.GetChild(0),CapsuleContainer.transform);
+            }
+        }
 
-        for (int i = 0; i < lr.transform.childCount; i++)
+        for (int i = 0; i < lr.positionCount; i++)
         {
             current = CapsuleContainer.transform.GetChild(i).transform;
 
